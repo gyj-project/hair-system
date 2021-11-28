@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.bzu.hair.persistence.TaskMapper">
+
+
+    <resultMap id="SelectTask" type="cn.bzu.hair.dto.TaskDto">
+        <result column="id" property="id"/>
+        <result column="customer_id" property="customerId"/>
+        <result column="customer_name" property="customerName"/>
+        <result column="barber_id" property="barberId"/>
+        <result column="barber_name" property="barberName"/>
+        <result column="business_id" property="businessId"/>
+        <result column="business_name" property="businessName"/>
+        <result column="task_spend_time" property="taskSpendTime"/>
+        <result column="task_start" property="taskStart"/>
+        <result column="task_end" property="taskEnd"/>
+        <result column="created_time" property="createdTime"/>
+        <result column="business_price" property="businessPrice"/>
+    </resultMap>
+
+    <select id="listByCondition" resultMap="SelectTask">
+        select distinct user1.user_name as customer_name,  user2.user_name as barber_name,
+        bus.business_name,bus.business_price,task.*
+        from
+        (select user.id, user.user_name from user,task where user.id = task.customer_id ) user1,
+		(select user.id, user.user_name from user,task where user.id = task.barber_id ) user2,
+		business bus,
+		task
+		where user1.id = task.customer_id and user2.id  = task.barber_id and bus.id = task.business_id
+		and task.is_deleted = 0
+        <if test="dto.customerName != null">
+            and user1.user_name= #{dto.customerName}
+        </if>
+        <if test="dto.barberName != null">
+            and user2.user_name= #{dto.barberName}
+        </if>
+        <if test="dto.businessName != null">
+            and bus.business_name= #{dto.businessName}
+        </if>
+        <if test="dto.dateStart != null">
+            and <![CDATA[ #{dto.dateStart} <= task.task_start ]]>
+        </if>
+        <if test="dto.dateEnd != null">
+            and <![CDATA[ task.task_end <= #{dto.dateEnd} ]]>
+        </if>
+        order by task.id asc
+
+
+    </select>
+
+
+    <select id="checkBarber" resultType="cn.bzu.hair.domain.Task">
+        select * from task
+        where (barber_id = #{barberId}
+            and (<![CDATA[ task.task_start >= #{taskStart} ]]> and <![CDATA[ task.task_start <= #{taskEnd} ]]>)
+            and(<![CDATA[ task.task_end >= #{taskStart} ]]> and <![CDATA[ task.task_end <= #{taskEnd} ]]>)
+            and is_deleted = 0
+        )
+        or(barber_id = #{barberId}
+            and(<![CDATA[ task.task_start <= #{taskStart} ]]> and <![CDATA[ task.task_end >= #{taskEnd} ]]>)
+            and is_deleted = 0
+        )
+        or(barber_id = #{barberId}
+            and (<![CDATA[ task.task_start >= #{taskStart} ]]> and <![CDATA[ task.task_start <= #{taskEnd} ]]>)
+            and (<![CDATA[ task.task_end >= #{taskEnd} ]]>)
+            and is_deleted = 0
+        )
+        or(barber_id = #{barberId}
+            and (<![CDATA[ task.task_end >= #{taskStart} ]]> and <![CDATA[ task.task_end <= #{taskEnd} ]]>)
+            and (<![CDATA[ task.task_start <= #{taskStart} ]]>)
+            and is_deleted = 0
+        )
+    </select>
+
+    <select id="checkCustomer" resultType="cn.bzu.hair.domain.Task">
+        select * from task
+        where (customer_id = #{customerId}
+            and (<![CDATA[ task.task_start >= #{taskStart} ]]> and <![CDATA[ task.task_start <= #{taskEnd} ]]>)
+            and(<![CDATA[ task.task_end >= #{taskStart} ]]> and <![CDATA[ task.task_end <= #{taskEnd} ]]>)
+            and is_deleted = 0
+        )
+        or(customer_id = #{customerId}
+            and(<![CDATA[ task.task_start <= #{taskStart} ]]> and <![CDATA[ task.task_end >= #{taskEnd} ]]>)
+            and is_deleted = 0
+        )
+        or(customer_id = #{customerId}
+            and (<![CDATA[ task.task_start >= #{taskStart} ]]> and <![CDATA[ task.task_start <= #{taskEnd} ]]>)
+            and (<![CDATA[ task.task_end >= #{taskEnd} ]]>)
+            and is_deleted = 0
+        )
+        or(customer_id = #{customerId}
+            and (<![CDATA[ task.task_end >= #{taskStart} ]]> and <![CDATA[ task.task_end <= #{taskEnd} ]]>)
+            and (<![CDATA[ task.task_start <= #{taskStart} ]]>)
+            and is_deleted = 0
+        )
+    </select>
+
+    <select id="remind" resultType="cn.bzu.hair.domain.Task">
+        select task.*
+        from task
+        where is_deleted = 0
+        and <![CDATA[ TIMESTAMPDIFF(MINUTE,now(),task_start) < 60 ]]>
+        and is_remind = 0
+    </select>
+
+    <update id="deleteTimeById" parameterType="java.lang.Long">
+        update task set task_start = null, task_end = null, task_spend_time = null
+        where id = #{id}
+    </update>
+
+
+
+</mapper>

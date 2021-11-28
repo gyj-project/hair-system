@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.bzu.hair.persistence.BrokenPromiseMapper">
+
+    <resultMap id="BaseResult" type="cn.bzu.hair.domain.BrokenPromise">
+        <result column="id" property="id"></result>
+        <result column="customer_id" property="customerId"></result>
+        <result column="user_name" property="customerName"></result>
+        <result column="broken_number" property="brokenNumber"></result>
+    </resultMap>
+
+    <select id="listByCondition" resultMap="BaseResult">
+        select broken_promise.*, user.user_name
+        from broken_promise
+        left join user
+        on user.id = broken_promise.customer_id
+        where 1=1
+        <if test="customerName != null">
+            and user.user_name = #{customerName}
+        </if>
+
+    </select>
+</mapper>

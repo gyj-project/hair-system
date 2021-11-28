@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.bzu.hair.persistence.UserMapper">
+    <resultMap id="SelectUser" type="cn.bzu.hair.dto.UserRoleDto">
+        <result column="user_id" property="userId"/>
+        <result column="role_id" property="roleId"/>
+        <result column="user_name" property="userName"/>
+        <result column="name" property="roleName"/>
+        <result column="gender" property="gender"/>
+        <result column="phone" property="phone"/>
+        <result column="email" property="email"/>
+        <result column="birthday" property="birthday"/>
+        <result column="is_deleted" property="isDeleted"/>
+    </resultMap>
+
+
+    <select id="listByCondition" resultMap="SelectUser">
+        select user.*, role.*, user_role.*
+        from user,role,user_role
+        where user.id = user_role.user_id
+        and role.id = user_role.role_id
+        <if test="user.id != null">
+            and user.id = #{user.id}
+        </if>
+        <if test="role.id != null">
+            and role.id = #{role.id}
+        </if>
+        <if test="user.userName != null">
+            and user.user_name = #{user.userName}
+        </if>
+        <if test="role.name != null">
+            and role.name = #{role.name}
+        </if>
+        <if test="user.gender != null">
+            and user.gender = #{user.gender}
+        </if>
+        <if test="user.phone != null">
+            and user.phone = #{user.phone}
+        </if>
+    </select>
+
+</mapper>

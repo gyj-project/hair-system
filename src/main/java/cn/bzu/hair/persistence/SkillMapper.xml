@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.bzu.hair.persistence.SkillMapper">
+    <update id="updateSkillBusinessName" parameterType="java.lang.Long">
+        update skill
+        set business_name =
+        (select business.business_name from business
+            where id = #{businessId})
+        where business_id = #{businessId}
+    </update>
+
+    <update id="updateSkillBarberName" parameterType="java.lang.Long">
+        update skill
+        set barber_name =
+        (select `user`.user_name from user
+            where id = #{barberId})
+        where barber_id = #{barberId}
+    </update>
+
+    <update id="updateSkillOpen" parameterType="java.lang.Long">
+        update skill
+        set is_closed = 0
+        where barber_id = #{barberId}
+    </update>
+    <update id="updateSkillClose" parameterType="java.lang.Long">
+        update skill
+        set is_closed = 1
+        where barber_id = #{barberId}
+    </update>
+
+
+
+
+</mapper>

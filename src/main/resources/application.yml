@@ -1,0 +1,33 @@
+spring:
+  liquibase:
+    enabled: false
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: g3708321
+    url: jdbc:mysql://127.0.0.1:3306/hair?characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    type: com.zaxxer.hikari.HikariDataSource
+    hikari:
+      minimum-idle: 5
+      maximum-pool-size: 15
+      auto-commit: true
+      idle-timeout: 3000
+      pool-name: HikariCP
+      max-lifetime: 1800000
+      connection-timeout: 30000
+  security:
+    user:
+      password: 123456
+  mail:
+    username: 1807069286@qq.com
+    password: nwhanbyfmjlhiacg
+    host: smtp.qq.com
+    port: 587
+#  redis:
+#    host: 127.0.0.1
+#    port: 6379
+#    timeout: 5000
+
+
+server:
+  port: 8081
